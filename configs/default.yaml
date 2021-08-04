@@ -1,0 +1,50 @@
+### Configs ###
+
+# Data Configs
+data:
+  dataroot: 
+    train: ./data/VOC2012/
+    val: ./data/VOC2012/
+    test: ./data/VOC2012/
+  vgg_weight: ./data/weights/vgg16_reducedfc.pth
+  input_size: 300
+  n_channels: 3
+  voc_classes: ['aeroplane', 'bicycle', 'bird', 'boat',
+               'bottle', 'bus', 'car', 'cat', 'chair',
+               'cow', 'diningtable', 'dog', 'horse',
+               'motorbike', 'person', 'pottedplant',
+               'sheep', 'sofa', 'train', 'tvmonitor']
+  color_mean: [104, 117, 123]
+
+# Training Configs
+train:
+  batch_size: 4
+  epochs: 30
+  optimizer:
+    type: sgd
+    lr: 0.001
+    momentum: 0.9
+    decay: 0.0001
+  criterion:
+    type: MultiBoxLoss
+    jaccard_thresh: 0.5
+    neg_pos: 3
+  n_gpus: 1
+  save_ckpt_interval: 10
+
+# Model Configs
+model:
+  name: ssd
+  n_classes: 21
+  feature_maps: [38, 19, 10, 5, 3, 1]
+  steps: [8, 16, 32, 64, 100, 300]
+  min_sizes: [30, 60, 111, 162, 213, 264]
+  max_sizes: [60, 111, 162, 213, 264, 315]
+  aspect_ratios: [[2], [2, 3], [2, 3], [2, 3], [2], [2]]
+  bbox_aspect_num: [4, 6, 6, 6, 4, 4]
+  resume: 
+    # e.g) resume: ./logs/2020-07-26T00:19:34.918002/ckpt/best_acc_ckpt.pth if resume. Blank if not resume
+
+# Other Configs
+util:
+  logdir: ./logs/
