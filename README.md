@@ -25,20 +25,26 @@ Then put the weight file in Object-Detection-App/data
 ```bash
 cd Object-Detection-App
 mkdir data
+cd data
+curl -sc /tmp/cookie "https://drive.google.com/uc?export=download&id=1MJGY8bf_1ke_Huwxbfn7Ugd6epgs93uh" > /dev/null
+CODE="$(awk '/_warning_/ {print $NF}' /tmp/cookie)"  
+curl -Lb /tmp/cookie "https://drive.google.com/uc?export=download&confirm=${CODE}&id=1MJGY8bf_1ke_Huwxbfn7Ugd6epgs93uh" -o ssd300_mAP_77.43_v2.pth
+
 ```
 
 3. Build docker image
 ```bash
-docker build ./ -t {your-image-name} --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)
+docker build ./docker/ -t {your-image-name} --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)
 ```
 
 4. Run docker image
 ```bash
-docker run -it --gpus {your-device} -p 8888:80 -v /home/{user}/Object-Detection-App:/workspace --name {container-name} {your-image-name}
+docker run -it --gpus '"device=0"' -p 8888:80 -v /home/{user}/Object-Detection-App:/home/duser/workspace --name {container-name} {your-image-name}
 ```
 
 5. start flask app
 ```bash
+cd workspace
 python app/main.py
 ```
 
