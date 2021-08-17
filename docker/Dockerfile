@@ -24,8 +24,7 @@ RUN pip install tqdm
 RUN pip install flask
 RUN pip install adabound
 
-RUN apt-get update
-RUN apt-get install -y libgl1-mesa-dev
+RUN apt-get update && apt-get install -y libopencv-dev 
 
 # duser setting
 # ARG USER_ID
