@@ -1,5 +1,5 @@
 # ローカル用
-FROM pytorch/pytorch
+FROM pytorch/pytorchc
 
 ARG DEBIAN_FRONTEND=noninteractive
 

@@ -1,6 +1,6 @@
 import argparse
 
-from executor.inferrer import Inferrer, SSDPredictShow
+from executor.inferrer import Inferrer
 
 
 def parser():
@@ -9,12 +9,12 @@ def parser():
     args = parser.parse_args()
     return args
 
-def infer(args):
-    img_path = 'test_input.jpg'
-    print(1)
-    inferer = SSDPredictShow(args.configfile)
-    inferer.show(img_path, data_confidence_level=0.5)
+def infer(args, img_path):
+    inferer = Inferrer(args.configfile)
+    img = inferer.show(img_path)
+    return img
 
-if __name__ == '__main__':
+def infer_img(img_path):
     args = parser()
-    infer(args)
+    img = infer(args, img_path)
+    return img

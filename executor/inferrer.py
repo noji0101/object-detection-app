@@ -1,79 +1,17 @@
 """Inferrer"""
-from typing import Dict
-import PIL
+from PIL import Image
 
 import torch
-import torch.nn.functional as F
 import numpy as np
 import matplotlib.pyplot as plt 
-import cv2  # OpenCVライブラリ
+import cv2
 
-from utils.config import Config
 from utils.load import load_yaml
 from model import get_model
-from model.common.device import setup_device
 from dataloader.transform import DataTransform
 
 
-class Inferrer:
-    def __init__(self, configfile: str):
-        # Config
-        config = load_yaml(configfile)
-        self.config = Config.from_json(config)
-
-        # Builds model
-        self.model = get_model(config)
-        self.model.build()
-        self.model_name = self.model.model_name
-
-        # device
-        if torch.cuda.is_available():
-            self.device = torch.device('cuda')
-        else:
-            self.device = torch.device('cpu')
-        self.model.model.to(self.device)
-        self.model.model.eval()
-
-        # classes
-        self.classes = self.model.classes
-                
-    def preprocess(self, image: PIL.Image) -> torch.Tensor:
-        """Preprocess Image
-        PIL.Image to Tensor
-        """
-        resize = (self.config.data.img_size[0], self.config.data.img_size[1])
-        color_mean = tuple(self.config.data.color_mean)
-        transform = DataTransform(resize, color_mean, mode='eval')
-        image = transform(image).unsqueeze(0) # torch.Size([1, 3, img_size[0], img_size[1]])
-        return image
-
-    def infer(self, image: PIL.Image = None) -> Dict:
-        """Infer an image
-        Parameters
-        ----------
-        image : PIL.Image, optional
-            input image, by default None
-        Returns
-        -------
-        dict :
-            prediction result label and probability
-        """
-        shape = image.size
-
-        tensor_image = self.preprocess(image)
-        with torch.no_grad():
-            tensor_image = tensor_image.to(self.device)
-            output = self.model.model(tensor_image)
-            output = F.softmax(output, dim=1)
-            pred = output.argmax(axis=1)
-            
-            label = pred.cpu().detach().clone()[0].item()
-            prob = output[0].cpu().detach().clone()[label].item()
-
-        return {'label': label, 'prob': prob}
-
-
-class SSDPredictShow():
+class Inferrer():
     """SSDでの予測と画像の表示をまとめて行うクラス"""
 
     def __init__(self, configfile):
@@ -84,14 +22,17 @@ class SSDPredictShow():
         self.model.build(is_eval=True)
         self.net = self.model.model
 
-        # classes
+        # 重みの読み込み
+        self.net_weights = torch.load(config['infer']['weight_path'], map_location={'cuda:0': 'cpu'})
+        self.net.load_state_dict(self.net_weights)
+
         self.classes = self.model.classes
+        self.data_confidence_level = config['infer']['data_confidence_level']
+        self.color_mean = config['data']['color_mean']  # (BGR)の色の平均値
+        self.input_size = config['data']['input_size']  # 画像のinputサイズを300×300にする
+        self.transform = DataTransform(self.input_size, self.color_mean)  # 前処理クラス
 
-        color_mean = (104, 117, 123)  # (BGR)の色の平均値
-        input_size = 300  # 画像のinputサイズを300×300にする
-        self.transform = DataTransform(input_size, color_mean)  # 前処理クラス
-
-    def show(self, image_file_path, data_confidence_level):
+    def show(self, image_file_path):
         """
         物体検出の予測結果を表示をする関数。
         Parameters
@@ -104,11 +45,17 @@ class SSDPredictShow():
         -------
         なし。rgb_imgに物体検出結果が加わった画像が表示される。
         """
-        rgb_img, predict_bbox, pre_dict_label_index, scores = self.ssd_predict(
-            image_file_path, data_confidence_level)
 
-        self.vis_bbox(rgb_img, bbox=predict_bbox, label_index=pre_dict_label_index,
-                      scores=scores, label_names=self.eval_categories)
+        img = cv2.imread(image_file_path)  # [高さ][幅][色BGR]
+        input_height, input_width, _ = img.shape  # 画像のサイズを取得
+
+        rgb_img, predict_bbox, pre_dict_label_index, scores = self.ssd_predict(
+            image_file_path, self.data_confidence_level)
+
+        img = self.vis_bbox(rgb_img, bbox=predict_bbox, label_index=pre_dict_label_index,
+                      scores=scores, label_names=self.classes,
+                      crop_height=input_height, crop_width=input_width)
+        return img
 
     def ssd_predict(self, image_file_path, data_confidence_level=0.5):
         """
@@ -130,7 +77,7 @@ class SSDPredictShow():
         rgb_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
         # 画像の前処理
-        phase = "val"
+        phase = "eval"
         img_transformed, boxes, labels = self.transform(
             img, phase, "", "")  # アノテーションが存在しないので""にする。
         img = torch.from_numpy(
@@ -168,7 +115,7 @@ class SSDPredictShow():
 
         return rgb_img, predict_bbox, pre_dict_label_index, scores
 
-    def vis_bbox(self, rgb_img, bbox, label_index, scores, label_names):
+    def vis_bbox(self, rgb_img, bbox, label_index, scores, label_names, crop_height, crop_width,):
         """
         物体検出の予測結果を画像で表示させる関数。
         Parameters
@@ -193,8 +140,9 @@ class SSDPredictShow():
         colors = plt.cm.hsv(np.linspace(0, 1, num_classes)).tolist()
 
         # 画像の表示
-        plt.figure(figsize=(10, 10))
+        fig = plt.figure(figsize=(crop_width/100, crop_height/100))
         plt.imshow(rgb_img)
+        plt.axis("off")
         currentAxis = plt.gca()
 
         # BBox分のループ
@@ -204,7 +152,7 @@ class SSDPredictShow():
             label_name = label_names[label_index[i]]
             color = colors[label_index[i]]  # クラスごとに別の色の枠を与える
 
-            # 枠につけるラベル　例：person;0.72　
+            # 枠につけるラベル 例：person;0.72
             if scores is not None:
                 sc = scores[i]
                 display_txt = '%s: %.2f' % (label_name, sc)
@@ -223,3 +171,20 @@ class SSDPredictShow():
             # 長方形の枠の左上にラベルを描画する
             currentAxis.text(xy[0], xy[1], display_txt, bbox={
                              'facecolor': color, 'alpha': 0.5})
+                             
+        fig.subplots_adjust(left=0, right=1, bottom=0, top=1)
+        fig.canvas.draw()
+        im = np.array(fig.canvas.renderer.buffer_rgba())
+        # im = np.array(fig.canvas.renderer._renderer) # matplotlibが3.1より前の場合
+
+        img = Image.fromarray(im)
+        img = img.convert('RGB')
+        # 元の画像サイズにセンタークロップ
+        img_width, img_height = img.size
+        # img = img.crop(((img_width - crop_width) // 2,
+        #                  (img_height - crop_height) // 2,
+        #                  (img_width + crop_width) // 2,
+        #                  (img_height + crop_height) // 2))
+
+        return img
+        # img.save('./test_output.png', quality=95)

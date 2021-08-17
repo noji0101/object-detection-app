@@ -81,6 +81,9 @@ class SSDModel(BaseModel):
 
         if self.model_name == 'ssd':
             self.model = SSD(phase, self.config)
+            if phase == 'train':
+                self.model.load_state_dict(self.config.data.vgg_weight)
+
             
         else:
             raise ValueError('This model name is not supported.')

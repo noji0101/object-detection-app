@@ -1,0 +1,126 @@
+@import url('https://fonts.googleapis.com/css?family=Sawarabi+Gothic');
+
+header,
+body {
+    font-family: 'Sawarabi Gothic', sans-serif;
+}
+
+
+header,
+.container{
+    text-align: center;
+}
+
+header h1{
+    width: 320px;
+    height: 60px;
+    margin: 60px auto 30px;
+    padding: 0.5em 0;
+    border-top: solid 3px;
+    border-bottom: solid 3px;
+}
+
+div#loading {
+    width: 64px;
+    height: 64px;
+    margin: 200px auto 10px;
+    display: none;
+    background: url(/static/loading.gif) no-repeat;
+    cursor: wait;
+    }
+
+.button{
+    padding: 30px 0px 0px
+}
+
+.file_select{
+    display: inline-block;
+}
+
+.container{
+    padding: 0px 0px 30px
+}
+
+#input_img_file,
+#infer
+    {
+        display: none;
+    }
+
+.select_btn,
+.submit_btn{
+    display: inline-block;
+    padding: 0.3em 1em;
+    margin: auto 1em; 
+    text-decoration: none;
+    color: #67c5ff;
+    border: solid 2px #67c5ff;
+    border-radius: 3px;
+    transition: .4s; 
+}
+
+.select_btn:hover,
+.submit_btn:hover {
+    background: #67c5ff;
+    color: white;
+  }
+
+
+.img_box img{
+    display: block;
+    width:100%
+}
+
+.img_box p{
+    background-color: antiquewhite;
+    font-size: 1.2rem;
+    margin: 0 auto 10px;
+    width: 25%;
+    height: 1.2rm;
+    border-radius: 3px;
+}
+
+.top {
+    font-weight: bold;
+    text-decoration: none;
+    background: #67c5ff;
+    color:white;
+    padding:7px 10px;
+    border-radius: 20px;
+  }
+
+  .top:hover {
+    background: silver;
+    text-decoration: none;
+  }
+
+.p_top{
+    margin-top: 40px;
+}
+
+@media screen and (min-width: 768px) {
+
+    .sp {
+        display: none;
+    }
+
+    .img_box {
+        display: inline-block;
+        width:35%;
+        padding: 2px;
+        margin:5px 10px;
+    }
+
+
+
+}
+
+
+@media screen and (max-width: 767px) {
+
+    .pc {
+        display: none;
+    }
+
+}
+

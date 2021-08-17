@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div id="loading"></div>
+<div id="content">
+    <div class="button">
+        <form method="post" action="/send" enctype="multipart/form-data">
+            <label class="select_btn"><input type="file" id="input_img_file" name="input_img_file" onchange="show_filename();">select image</label>
+            <label class="submit_btn"><input type="submit" id="infer" onclick="loading();">infer</label>
+            <p id="filename">not selected</p>
+        </form>
+    </div>
+
+        {% if input_img_url %}
+    <div class="img_box">
+        <p>input</p>
+        <img src="{{ input_img_url }}"></div>
+    <div class="img_box">
+        <p>output</p>
+        <img src="{{ output_img_url }}">
+    </div>
+    <p class="p_top"><a href="/" class="top">TOP</a></p>
+        {% endif %}
+</div>
+{% endblock %}

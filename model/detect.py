@@ -6,7 +6,7 @@ from math import sqrt as sqrt
 
 
 # SSDの推論時にconfとlocの出力から、被りを除去したBBoxを出力する
-class Detect(Function):
+class Detect():
 
     def __init__(self, conf_thresh=0.01, top_k=200, nms_thresh=0.45):
         self.softmax = nn.Softmax(dim=-1)  # confをソフトマックス関数で正規化するために用意
@@ -14,7 +14,7 @@ class Detect(Function):
         self.top_k = top_k  # nm_supressionでconfの高いtop_k個を計算に使用する, top_k = 200
         self.nms_thresh = nms_thresh  # nm_supressionでIOUがnms_thresh=0.45より大きいと、同一物体へのBBoxとみなす
 
-    def forward(self, loc_data, conf_data, dbox_list):
+    def __call__(self, loc_data, conf_data, dbox_list):
         """
         順伝搬の計算を実行する。
 

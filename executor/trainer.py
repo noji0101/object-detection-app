@@ -81,6 +81,7 @@ class Trainer:
 
             if epoch_val_loss < best_loss:
                 best_loss = epoch_val_loss
+                LOG.info(' Saving Best Checkpoint...')
                 self._save_ckpt(epoch, mode='best')
 
     def eval(self, epoch):
@@ -92,14 +93,13 @@ class Trainer:
         self.model.eval()   # モデルを検証モードに
         print('-------------')
         print('（val）')
-        with tqdm(self.dataloaders_dict['train'], ncols=100) as pbar:
+        with tqdm(self.dataloaders_dict['val'], ncols=100) as pbar:
             with torch.no_grad():
-                for images, targets in self.dataloaders_dict['val']:
+                for images, targets in pbar:
 
                     # GPUが使えるならGPUにデータを送る
                     images = images.to(self.device)
-                    targets = [ann.to(self.device)
-                            for ann in targets]  # リストの各要素のテンソルをGPUへ
+                    targets = [ann.to(self.device) for ann in targets]  # リストの各要素のテンソルをGPUへ
 
                     self.optimizer.zero_grad()
 

@@ -45,6 +45,13 @@ model:
   resume: 
     # e.g) resume: ./logs/2020-07-26T00:19:34.918002/ckpt/best_acc_ckpt.pth if resume. Blank if not resume
 
+# Infer Configs
+infer:
+  weight_path: ./data/weights/ssd300_mAP_77.43_v2.pth
+  # weight_path: ./ckpt/best_acc_ckpt.pth
+  data_confidence_level: 0.6
+  
 # Other Configs
 util:
   logdir: ./logs/
+

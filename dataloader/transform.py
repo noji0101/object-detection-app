@@ -34,7 +34,7 @@ class DataTransform():
                 Resize(input_size),  # 画像サイズをinput_size×input_sizeに変形
                 SubtractMeans(color_mean)  # BGRの色の平均値を引き算
             ]),
-            'val': Compose([
+            'eval': Compose([
                 ConvertFromInts(),  # intをfloatに変換
                 Resize(input_size),  # 画像サイズをinput_size×input_sizeに変形
                 SubtractMeans(color_mean)  # BGRの色の平均値を引き算
@@ -45,7 +45,7 @@ class DataTransform():
         """
         Parameters
         ----------
-        phase : 'train' or 'val'
+        phase : 'train' or 'eval'
             前処理のモードを指定。
         """
         return self.data_transform[phase](img, boxes, labels)

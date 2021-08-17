@@ -94,7 +94,8 @@ class SSD(nn.Module):
         if self.phase == "inference":  # 推論時
             # クラス「Detect」のforwardを実行
             # 返り値のサイズは torch.Size([batch_num, 21, 200, 5])
-            return self.detect(output[0], output[1], output[2])
+            with torch.no_grad():
+                return self.detect(output[0], output[1], output[2])
 
         else:  # 学習時
             return output
