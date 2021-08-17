@@ -18,3 +18,4 @@ def infer_img(img_path):
     args = parser()
     img = infer(args, img_path)
     return img
+

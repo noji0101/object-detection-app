@@ -27,6 +27,5 @@ def run(args):
         model.train()
 
 if __name__ == '__main__':
-    print(1)
     args = parser()
     run(args)
