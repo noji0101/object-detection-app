@@ -34,13 +34,11 @@ curl -Lb /tmp/cookie "https://drive.google.com/uc?export=download&confirm=${CODE
 3. Build docker image
 ```bash
 docker build ./docker/ -t {your-image-name} --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)
-docker build ./docker/ -t intern_rnoji_flask_test --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g)
 ```
 
 4. Run docker image
 ```bash
 docker run -it --gpus '"device=0"' -p 8888:80 -v /home/{user}/Object-Detection-App:/home/duser/workspace --name {container-name} {your-image-name}
-docker run -it --gpus '"device=0"' -p 8888:80 -v /home/rnoji/Object-Detection-App:/home/duser/workspace --name intern_rnoji_flask_test intern_rnoji_flask_test
 ```
 
 5. start flask app
