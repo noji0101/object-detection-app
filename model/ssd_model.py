@@ -1,6 +1,7 @@
 """SSD model"""
 from typing import Dict
 
+import torch
 import torch.nn as nn
 import torchvision.models as models
 
@@ -62,7 +63,7 @@ class SSDModel(BaseModel):
         # evaluation
         if is_eval:
             LOG.info(f' Test data...')
-            self.test_img_list, self.test_lbl_list = DataLoader().load_data(self.config.data.dataroot.test)
+            self.test_img_list, self.test_lbl_list ,_ ,_ = DataLoader().load_data(self.config.data.dataroot.test)
             self.testloader = DataLoader().preprocess_data(self.config.data, self.test_img_list, self.test_lbl_list, self.batch_size, 'eval')
 
     def _set_logging(self):
@@ -82,7 +83,8 @@ class SSDModel(BaseModel):
         if self.model_name == 'ssd':
             self.model = SSD(phase, self.config)
             if phase == 'train':
-                self.model.load_state_dict(self.config.data.vgg_weight)
+                # self.model.load_state_dict(self.config.data.vgg_weight)
+                self.model.load_state_dict(torch.load(self.config.data.vgg_weight), strict=False)
 
             
         else:
@@ -91,7 +93,7 @@ class SSDModel(BaseModel):
         # Load checkpoint
         if self.resume:
             ckpt = load_ckpt(self.resume)
-            self.model.load_state_dict(ckpt['model_state_dict'])
+            self.model.load_state_dict(ckpt['model_state_dict'], strict=False)
 
         LOG.info(' Model was successfully build.')
 

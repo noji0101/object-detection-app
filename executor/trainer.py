@@ -84,7 +84,7 @@ class Trainer:
                 LOG.info(' Saving Best Checkpoint...')
                 self._save_ckpt(epoch, mode='best')
 
-    def eval(self, epoch):
+    def eval(self):
         # ネットワークがある程度固定であれば、高速化させる
         torch.backends.cudnn.benchmark = True
 
@@ -111,7 +111,7 @@ class Trainer:
 
                     epoch_val_loss += loss.item()
 
-                    pbar.set_description(f'eval epoch: {epoch}')
+                    pbar.set_description(f'eval epoch: {self.epochs}')
                 
         return epoch_val_loss
 

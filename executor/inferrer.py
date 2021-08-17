@@ -24,7 +24,7 @@ class Inferrer():
 
         # 重みの読み込み
         self.net_weights = torch.load(config['infer']['weight_path'], map_location={'cuda:0': 'cpu'})
-        self.net.load_state_dict(self.net_weights)
+        self.net.load_state_dict(self.net_weights, strict=False)
 
         self.classes = self.model.classes
         self.data_confidence_level = config['infer']['data_confidence_level']

@@ -21,7 +21,7 @@ git clone https://github.com/noji0101/Object-Detection-App.git
 
 Download from [here](https://drive.google.com/uc?export=view&id=1MJGY8bf_1ke_Huwxbfn7Ugd6epgs93uh)
 
-Then put the weight file in Object-Detection-App/data
+Then put the weight file in Object-Detection-App/data/weights
 ```bash
 cd Object-Detection-App
 mkdir -p data/weights
@@ -29,7 +29,6 @@ cd data/weights
 curl -sc /tmp/cookie "https://drive.google.com/uc?export=download&id=1MJGY8bf_1ke_Huwxbfn7Ugd6epgs93uh" > /dev/null
 CODE="$(awk '/_warning_/ {print $NF}' /tmp/cookie)"  
 curl -Lb /tmp/cookie "https://drive.google.com/uc?export=download&confirm=${CODE}&id=1MJGY8bf_1ke_Huwxbfn7Ugd6epgs93uh" -o ssd300_mAP_77.43_v2.pth
-
 ```
 
 3. Build docker image
@@ -50,7 +49,21 @@ cd workspace
 python app/main.py
 ```
 
-6. Accees loaclhost:8888 on your browser!
+6. Accees localhost:8888 on your browser!
+
+## Download Dataset
+Then put the Dataset file in Object-Detection-App/data
+```bash
+cd data
+
+# download dataset
+curl -sc /tmp/cookie "https://drive.google.com/uc?export=download&id=13Ghat9p1dSFcaLTzZ5Pk7IAoInCXyfmJ" > /dev/null
+CODE="$(awk '/_warning_/ {print $NF}' /tmp/cookie)"  
+curl -Lb /tmp/cookie "https://drive.google.com/uc?export=download&confirm=${CODE}&id=13Ghat9p1dSFcaLTzZ5Pk7IAoInCXyfmJ" -o VOC2012.zip
+
+# unzip
+unzip VOC2012.zip
+```
 
 ## train
 ```bash
