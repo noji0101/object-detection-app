@@ -57,7 +57,7 @@ python train.py --eval
 Defalut config file is **configs/default.yaml**
 
 If you want to use another config file,
-add configfile command like this
+add '--configfile' command like this
 ```bash
 python train.py --configfile ./configs/foo.yaml
 ```
