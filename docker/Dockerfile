@@ -23,6 +23,8 @@ RUN pip install tqdm
 # RUN pip install jupyter
 RUN pip install flask
 RUN pip install adabound
+RUN pip install PyYAML
+RUN pip install torchvision
 
 RUN apt-get update && apt-get install -y libopencv-dev 
 
