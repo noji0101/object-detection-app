@@ -1,5 +1,7 @@
 # ローカル用
-FROM pytorch/pytorchc
+# FROM pytorch/pytorchc
+# リモート用
+FROM nvidia/cuda:10.1-cudnn7-devel-ubuntu18.04
 
 ARG DEBIAN_FRONTEND=noninteractive
 
