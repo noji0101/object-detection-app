@@ -33,6 +33,8 @@ class SSDModel(BaseModel):
         self.batch_size = self.config.train.batch_size
         self.n_gpus = self.config.train.n_gpus
         self.resume = self.config.model.resume
+        self.vgg_weight = self.config.data.vgg_weight
+        self.eval_ckpt = self.config.model.eval_ckpt
 
         # dataloader
         self.trainloader = None
@@ -84,7 +86,9 @@ class SSDModel(BaseModel):
             self.model = SSD(phase, self.config)
             if phase == 'train':
                 # self.model.load_state_dict(self.config.data.vgg_weight)
-                self.model.load_state_dict(torch.load(self.config.data.vgg_weight), strict=False)
+                self.model.load_state_dict(torch.load(self.vgg_weightelf.config.data.vgg_weight), strict=False)
+            elif phase == 'inference':
+                self.model.load_state_dict(load_ckpt(self.eval_ckpt))
 
             
         else:

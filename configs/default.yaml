@@ -44,6 +44,7 @@ model:
   bbox_aspect_num: [4, 6, 6, 6, 4, 4]
   resume: 
     # e.g) resume: ./logs/2020-07-26T00:19:34.918002/ckpt/best_acc_ckpt.pth if resume. Blank if not resume
+  eval_ckpt: data/weights/ckpt/best_acc_ckpt.pth
 
 # Infer Configs
 infer:
